@@ -2,15 +2,15 @@
 
 import { useState } from "react";
 import { LocketForm } from "@/components/locket-form";
-import { HeartLocket } from "@/components/heart-locket";
+import { PhotoAlbum } from "@/components/heart-locket";
 
 export default function Page() {
   const [name, setName] = useState<string | null>(null);
-  const [image, setImage] = useState<string | null>(null);
+  const [images, setImages] = useState<string[]>([]);
 
-  function handleCreate(newName: string, newImage: string | null) {
+  function handleCreate(newName: string, newImages: string[]) {
     setName(newName);
-    setImage(newImage);
+    setImages(newImages);
   }
 
   return (
@@ -20,12 +20,12 @@ export default function Page() {
         <div className="flex w-full max-w-sm flex-col gap-16">
           <div className="flex flex-col gap-3">
             <h1 className="font-serif text-5xl font-light leading-tight tracking-tight text-foreground text-balance">
-              Heart Locket
+              Photo Album
             </h1>
             <p className="font-sans text-sm leading-relaxed text-muted-foreground">
               Create a keepsake for someone you love.
               <br />
-              Upload their photo, and seal it inside.
+              Upload their photos, and seal them inside.
             </p>
           </div>
 
@@ -33,9 +33,9 @@ export default function Page() {
         </div>
       </section>
 
-      {/* Right — Locket */}
+      {/* Right — Album */}
       <section className="relative flex-1 overflow-hidden bg-secondary/50">
-        <HeartLocket name={name} image={image} />
+        <PhotoAlbum name={name} images={images} />
       </section>
     </main>
   );

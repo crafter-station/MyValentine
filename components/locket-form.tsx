@@ -1,39 +1,48 @@
 "use client";
 
-import { useRef } from "react";
-import { Heart, Upload } from "lucide-react";
+import { useRef, useState } from "react";
+import { Images, Upload } from "lucide-react";
 
 interface LocketFormProps {
-  onSubmit: (name: string, image: string | null) => void;
+  onSubmit: (name: string, images: string[]) => void;
 }
 
 export function LocketForm({ onSubmit }: LocketFormProps) {
   const nameRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const previewRef = useRef<string | null>(null);
+  const [imageCount, setImageCount] = useState(0);
+  const imagesRef = useRef<string[]>([]);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      previewRef.current = reader.result as string;
-    };
-    reader.readAsDataURL(file);
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const selected = Array.from(files).slice(0, 8);
+    imagesRef.current = [];
+    let loaded = 0;
+
+    selected.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        imagesRef.current.push(reader.result as string);
+        loaded++;
+        if (loaded === selected.length) {
+          setImageCount(imagesRef.current.length);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const name = nameRef.current?.value.trim() ?? "";
     if (!name) return;
-    onSubmit(name, previewRef.current);
+    onSubmit(name, imagesRef.current);
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col items-start gap-10"
-    >
+    <form onSubmit={handleSubmit} className="flex flex-col items-start gap-10">
       <div className="flex flex-col gap-2">
         <p className="text-xs font-sans uppercase tracking-[0.2em] text-muted-foreground">
           Their name
@@ -49,7 +58,7 @@ export function LocketForm({ onSubmit }: LocketFormProps) {
 
       <div className="flex flex-col gap-2">
         <p className="text-xs font-sans uppercase tracking-[0.2em] text-muted-foreground">
-          Their photo
+          Their photos
         </p>
         <label
           htmlFor="photo-upload"
@@ -60,24 +69,30 @@ export function LocketForm({ onSubmit }: LocketFormProps) {
             className="text-muted-foreground transition-colors group-hover:text-foreground"
           />
           <span className="font-serif text-lg text-muted-foreground/50 transition-colors group-hover:text-foreground">
-            Choose an image
+            {imageCount > 0
+              ? `${imageCount} photo${imageCount > 1 ? "s" : ""} selected`
+              : "Choose images"}
           </span>
           <input
             ref={fileRef}
             id="photo-upload"
             type="file"
             accept="image/*"
+            multiple
             onChange={handleFileChange}
             className="sr-only"
           />
         </label>
+        <p className="text-[10px] font-sans text-muted-foreground/50">
+          Up to 8 photos
+        </p>
       </div>
 
       <button
         type="submit"
         className="mt-4 flex items-center gap-2 font-sans text-xs uppercase tracking-[0.2em] text-foreground transition-all duration-300 hover:gap-3 hover:text-ring"
       >
-        <Heart size={14} />
+        <Images size={14} />
         Create
       </button>
     </form>
