@@ -13,30 +13,32 @@ export default function Page() {
     setImages(newImages);
   }
 
+  const submitted = name !== null;
+
   return (
-    <main className="flex min-h-svh flex-col lg:flex-row">
-      {/* Left — Form */}
-      <section className="flex flex-1 items-center justify-center p-12 lg:p-20">
-        <div className="flex w-full max-w-sm flex-col gap-16">
-          <div className="flex flex-col gap-3">
-            <h1 className="font-serif text-5xl font-light leading-tight tracking-tight text-foreground text-balance">
-              Photo Album
-            </h1>
-            <p className="font-sans text-sm leading-relaxed text-muted-foreground">
-              Create a keepsake for someone you love.
-              <br />
-              Upload their photos, and seal them inside.
-            </p>
+    <main className="min-h-svh">
+      {!submitted ? (
+        <section className="flex min-h-svh items-center justify-center p-12 lg:p-20">
+          <div className="flex w-full max-w-sm flex-col gap-16">
+            <div className="flex flex-col gap-3">
+              <h1 className="font-serif text-5xl font-light leading-tight tracking-tight text-foreground text-balance">
+                Photo Album
+              </h1>
+              <p className="font-sans text-sm leading-relaxed text-muted-foreground">
+                Create a keepsake for someone you love.
+                <br />
+                Upload their photos, and seal them inside.
+              </p>
+            </div>
+
+            <LocketForm onSubmit={handleCreate} />
           </div>
-
-          <LocketForm onSubmit={handleCreate} />
-        </div>
-      </section>
-
-      {/* Right — Album */}
-      <section className="relative flex-1 overflow-hidden bg-secondary/50">
-        <PhotoAlbum name={name} images={images} />
-      </section>
+        </section>
+      ) : (
+        <section className="relative min-h-svh overflow-hidden bg-secondary/50">
+          <PhotoAlbum name={name} images={images} />
+        </section>
+      )}
     </main>
   );
 }
